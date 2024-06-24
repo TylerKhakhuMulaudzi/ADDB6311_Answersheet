@@ -1,0 +1,266 @@
+
+
+//Question 1
+create table Instructor(
+INS_ID int,
+INS_Fname varchar(50),
+INS_Sname varchar(50),
+INS_Contact int,
+INS_Level int,
+primary key(INS_ID)
+);
+create table CUSTOMER(
+cust_ID varchar(50),
+cust_Fname varchar(50),
+cust_Sname varchar(50),
+cust_Address varchar(100),
+cust_Contact int,
+primary key(cust_ID)
+);
+create table Dive(
+dive_ID int,
+dive_Name varchar(50),
+dive_Duration varchar(20),
+dive_Location varchar(100),
+dive_Exp_Level int,
+dive_Cost int,
+primary key(dive_ID)
+);
+                                                                                                                                                                                                
+create table Dive_Event(
+dive_Event_ID varchar(50),
+dive_Date date,
+dive_Participants int,
+INS_ID int,
+cust_ID varchar(50),
+dive_ID int,
+primary key(dive_Event_ID),
+FOREIGN KEY (INS_ID) REFERENCES Instructor(INS_ID),
+  FOREIGN KEY (cust_ID) REFERENCES CUSTOMER(cust_ID),
+   FOREIGN KEY (dive_ID) REFERENCES Dive(dive_ID) 
+);
+
+insert into Instructor(INS_ID,INS_Fname,INS_Sname,INS_Contact,INS_Level)
+select 101,'James','Wills',0843569851,7 from dual union all
+select 102,'Sam','Wills',0763698521,2 from dual union all
+select 103,'Sally','Wills',0786598521,8 from dual union all
+select 104,'Bob','Wills',0796369857,3 from dual union all
+select 105,'Simon','Jones',0826598741,9 from dual
+
+
+insert into CUSTOMER(cust_ID,cust_Fname,cust_Sname,cust_Address,cust_Contact)
+select 'C115','Heinrich','Wills','3 Main Road',0821253659 from dual union all
+select 'C116','David','Watson','13 Cape Road',0769658547 from dual union all
+select 'C117','Waldo','Smith','3 Mountain Road',0863256574 from dual union all
+select 'C118','Alex','Hanson','8 Circle Road',0762356587 from dual union all
+select 'C119','Kuhle','Bitterhout','15 Main Road',0821235258 from dual union all
+select 'C120','Thando','Zolani','88 Summer Road',0847541254 from dual union all
+select 'C121','Philip','Jackson','3 Long Road',0745556658 from dual union all
+select 'C122','Sarah','Jones','7 Sea Road',0814745745 from dual union all
+select 'C123','Catherine','Howard','31 Lake Side Road',0822232521 from dual
+
+
+insert into Dive(dive_ID,dive_Name,dive_Duration,dive_Location,dive_Exp_Level,dive_Cost)
+select 550,'Shark Dive','3 hours','Shark point ',8,500 from dual union all
+select 551,'Coral Dive','1 hour','Break point ',7,300 from dual union all
+select 552,'Wave Crescent','2 hours','ship wreck ally ',3,800 from dual union all
+select 553,'Underwater Exploration','1 hours','Coral ally ',2,250 from dual union all
+select 554,'Underwater Adventure','3 hours','Sandy Beach ',3,750 from dual union all
+select 555,'Deep Blue Ocean','30 miniutes','Lazy Waves ',2,102 from dual union all
+select 556,'Rough Seas','1 hour','Pipe ',9,700 from dual union all
+select 557,'White Water','2 hours','Drifts ',5,200 from dual union all
+select 558,'Current Adventure','2 hours','Rock Lands ',3,150 from dual
+
+
+insert into Dive_Event(dive_Event_ID,dive_Date,dive_Participants,INS_ID,cust_ID,dive_ID)
+select 'de_101','15-JUL-17',5,103,'C115',558 from dual union all
+select 'de_102','16-JUL-17',7,102,'C117',555 from dual union all
+select 'de_103','18-JUL-17',8,104,'C118',552 from dual union all
+select 'de_104','19-JUL-17',3,101,'C119',551 from dual union all
+select 'de_105','21-JUL-17',5,104,'C121',558 from dual union all
+select 'de_106','22-JUL-17',8,105,'C120',556 from dual union all
+select 'de_107','25-JUL-17',10,105,'C115',554 from dual union all
+select 'de_108','27-JUL-17',5,101,'C122',552 from dual union all
+select 'de_109','28-JUL-17',3,102,'C123',553 from dual
+/*
+Question 2
+*/
+create user C##khakhu1 IDENTIFIED BY adminuser;
+create user C##khakhu2 IDENTIFIED BY genralUser;
+
+GRANT CREATE SESSION TO C##khakhu1;
+GRANT CREATE SESSION TO C##khakhu2;
+/*Question3
+INS_Fname varchar(50),
+INS_Sname
+
+create table CUSTOMER(
+cust_ID varchar(50),
+cust_Fname varchar(50),
+cust_Sname varchar(50),
+cust_Address varchar(100),
+cust_Contact int,
+
+Dive(dive_ID,dive_Name,dive_Duration,dive_Location,dive_Exp_Level,dive_Cost)
+*/
+SELECT 
+    (Instructor.INS_Fname || ',' || Instructor.INS_Sname) AS Instructor,
+    (CUSTOMER.cust_Fname || ',' || CUSTOMER.cust_Sname) AS customer,
+    Dive.dive_Location AS Dive_Location,
+    Dive_Event.dive_Participants AS Dive_participants
+FROM 
+    Dive_Event
+JOIN 
+    Instructor ON Dive_Event.INS_ID = Instructor.INS_ID
+JOIN 
+    CUSTOMER ON Dive_Event.cust_ID = CUSTOMER.cust_ID
+JOIN 
+    Dive ON Dive_Event.dive_ID = Dive.dive_ID
+WHERE 
+    Dive_Event.dive_Participants  >=8 AND Dive_Event.dive_Participants < 10;
+
+/*Question 4
+Dive(dive_ID,dive_Name,dive_Duration,dive_Location,dive_Exp_Level,dive_Cost)
+ Dive_Event(dive_Event_ID,dive_Date,dive_Participants,INS_ID,cust_ID,dive_ID)
+*/
+BEGIN
+    FOR record IN (
+        SELECT 
+            Dive.dive_Name AS Dive_name,
+            Dive_Event.dive_Date AS Dive_Date,
+            Dive_Event.dive_Participants AS Participants
+        FROM 
+            Dive
+        JOIN 
+            Dive_Event ON Dive.dive_ID = Dive_Event.dive_ID
+        WHERE 
+            Dive_Event.dive_Participants >= 10
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE('Dive_name: ' || record.Dive_name);
+        DBMS_OUTPUT.PUT_LINE('Dive_Date: ' || record.Dive_Date);
+        DBMS_OUTPUT.PUT_LINE('Participants: ' || record.Participants);
+        DBMS_OUTPUT.PUT_LINE('---------------------------------------------');
+    END LOOP;
+END;
+/*viewing it*/
+SELECT 
+    Dive.dive_Name AS Dive_name,
+    Dive_Event.dive_Date AS Dive_Date,
+    Dive_Event.dive_Participants AS Participants
+FROM 
+    Dive
+JOIN 
+    Dive_Event ON Dive.dive_ID = Dive_Event.dive_ID
+WHERE 
+    Dive_Event.dive_Participants >= 10;
+/*Question 5
+CUSTOMER(cust_ID,cust_Fname,cust_Sname,cust_Address,cust_Contact)
+ Dive_Event(dive_Event_ID,dive_Date,dive_Participants,INS_ID,cust_ID,dive_ID)
+Dive(dive_ID,dive_Name,dive_Duration,dive_Location,dive_Exp_Level,dive_Cost)
+*/
+/*Question6
+Instructor(INS_ID,INS_Fname,INS_Sname,INS_Contact,INS_Level)
+*/
+CREATE OR REPLACE VIEW vw_Dive_Event AS
+SELECT 
+    Instructor.INS_ID AS INS_ID,
+    CUSTOMER.cust_ID AS CUST_ID,
+    CUSTOMER.cust_Address AS CUST_ADDRESS,
+    Dive.dive_Duration AS Dive_Duration,
+    TO_CHAR(Dive_Event.dive_Date, 'YYYY-MM-DD') AS Dive_Date
+FROM 
+    Dive_Event
+JOIN 
+    CUSTOMER ON Dive_Event.cust_ID = CUSTOMER.cust_ID
+JOIN 
+    Dive ON Dive_Event.dive_ID = Dive.dive_ID
+JOIN
+    Instructor ON Dive_Event.INS_ID = Instructor.INS_ID
+WHERE 
+    Dive_Event.dive_Date > TO_DATE('2017-07-19', 'YYYY-MM-DD');
+SELECT * FROM vw_Dive_Event ;
+
+ /*Question7 */
+ CREATE OR REPLACE TRIGGER new_dive_event
+BEFORE INSERT OR UPDATE ON Dive_Event
+FOR EACH ROW
+BEGIN
+    IF :NEW.dive_Participants <= 0 OR :NEW.dive_Participants > 20 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Participants must be between 1 and 20.');
+    END IF;
+END;
+/
+/*Testing the code*/
+INSERT INTO Dive_Event (dive_ID, cust_ID, INS_ID, dive_Date, dive_Participants)
+VALUES (1, 1, 1, TO_DATE('2024-06-24', 'YYYY-MM-DD'), 10);
+
+/*Question8*/
+CREATE OR REPLACE PROCEDURE sp_Customer_Details
+(customerID IN CUSTOMER.cust_ID%TYPE
+) AS
+BEGIN
+  FOR customer_id IN (
+    SELECT
+      CUSTOMER.cust_ID,
+      Dive.dive_Name,
+      Dive_Event.dive_Date,
+      CUSTOMER.cust_Fname,
+      CUSTOMER.cust_Sname,
+      Dive.dive_Name,
+      Dive_Event.dive_Date
+    FROM
+      Dive_Event 
+      JOIN CUSTOMER  ON Dive_Event.cust_ID = CUSTOMER.cust_ID
+      JOIN Dive  ON Dive_Event.dive_ID = Dive.dive_ID
+    WHERE
+      CUSTOMER.cust_ID = customerID
+  ) LOOP
+    DBMS_OUTPUT.PUT_LINE('customerID: ' || customer_id.cust_ID);
+    DBMS_OUTPUT.PUT_LINE('Dive Name: ' || customer_id.dive_Name);
+    DBMS_OUTPUT.PUT_LINE('Dive Event: ' || customer_id.dive_Date);
+  END LOOP;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE(customer_id.cust_Fname || customer_id.cust_Sname ||'will be booked for '||customer_id.dive_Name||'on the '||customer_id.dive_Date);
+END sp_Customer_Details;
+/
+
+
+/*Question 9 
+Dive(dive_ID,dive_Name,
+Dive_Event(dive_Event_ID,dive_Date
+*/
+CREATE OR REPLACE FUNCTION checksInput(
+  p_dive_id IN CUSTOMER.cust_ID%TYPE
+) RETURN VARCHAR2 AS
+  v_customer_name VARCHAR2(50);
+  v_product_type VARCHAR2(20);
+  v_dive_date DATE;
+BEGIN
+  SELECT
+    (CUSTOMER.cust_Fname || ' ' || CUSTOMER.cust_Sname),
+    Dive.dive_Name,
+    Dive_Event.dive_Date
+  INTO
+    v_customer_name,
+    v_product_type,
+    v_sales_date
+  FROM
+    SALEZ 
+    JOIN CUSTOMER  ON Dive_Event.cust_ID = CUSTOMERZ.cust_ID
+    JOIN airProduct  ON SALEZ.product_ID = airProduct.product_ID
+  WHERE
+    SALEZ.sales_ID = p_dive_id;
+  
+  RETURN 'Customer: ' || v_customer_name || ', Product Type: ' || v_product_type || ', Sales Date: ' || v_sales_date;
+END checksInput;
+/
+
+//To use the function, you can execute:
+
+DECLARE
+  sales_id SALEZ.sales_ID%TYPE := 10711;
+BEGIN
+  DBMS_OUTPUT.PUT_LINE(checksInput(sales_id));
+END;
+/
