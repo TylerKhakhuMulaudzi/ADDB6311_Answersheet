@@ -1,0 +1,25 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
+package com.mycompany.addb6311;
+
+import java.util.Scanner;
+
+/**
+ *
+ * @author RC_Student_lab
+ */
+public class ADDB6311 {
+
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Hello ");
+        System.out.println("welcome to The adventure diving club");
+        System.out.println("click 1 if you wnt to see customer details \n click 2 if you want to adjust your dive scedules");
+        int check = input.nextInt();
+        if (check ==1){
+            System.out.println("");
+        }
+    }
+}
